@@ -54,6 +54,4 @@ add_action( 'init', 'activecalculatorblock_activecalculator_block_block_init' );
 // //Set the branch that contains the stable release.
 // $myUpdateChecker->setBranch('main');
 
-// $myUpdateChecker->setAuthentication('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');
-
 // $myUpdateChecker->getVcsApi()->enableReleaseAssets();
