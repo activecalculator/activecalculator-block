@@ -40,13 +40,11 @@ add_action( 'init', 'activecalculatorblock_activecalculator_block_block_init' );
 
 // Plugn Update Checker
 // https://github.com/YahnisElsts/plugin-update-checker/
-// Plugn Update Checker
-// https://github.com/YahnisElsts/plugin-update-checker/
 require 'plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://github.com/cdil-bc/activecalculator-block/',
+	'https://github.com/activecalculator/activecalculator-block/',
 	__FILE__,
 	'activecalculator-block'
 );
