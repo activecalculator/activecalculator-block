@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "activecalculatorblock/activecalculator-block",
+	"version": "0.1.0",
+	"title": "ActiveCalculator.com Block",
+	"category": "widgets",
+	"attributes": {
+		"id": {
+		  "type": "string",
+		  "default": ""
+		}
+	},
+	"description": "Block for embedding ActiveCalculator.com calculators",
+	"example": {},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "activecalculator-block",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js"
+}
