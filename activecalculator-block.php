@@ -54,6 +54,6 @@ $myUpdateChecker->getVcsApi()->enableReleaseAssets();
 //Set the branch that contains the stable release.
 $myUpdateChecker->setBranch('main');
 
-$myUpdateChecker->setAuthentication('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');
+$myUpdateChecker->setAuthentication('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');
 
 $myUpdateChecker->getVcsApi()->enableReleaseAssets();
