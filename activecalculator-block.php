@@ -40,20 +40,20 @@ add_action( 'init', 'activecalculatorblock_activecalculator_block_block_init' );
 
 // Plugn Update Checker
 // https://github.com/YahnisElsts/plugin-update-checker/
-require 'plugin-update-checker/plugin-update-checker.php';
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+// require 'plugin-update-checker/plugin-update-checker.php';
+// use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
-$myUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://github.com/activecalculator/activecalculator-block/',
-	__FILE__,
-	'activecalculator-block'
-);
+// $myUpdateChecker = PucFactory::buildUpdateChecker(
+// 	'https://github.com/activecalculator/activecalculator-block/',
+// 	__FILE__,
+// 	'activecalculator-block'
+// );
 
-$myUpdateChecker->getVcsApi()->enableReleaseAssets();
+// $myUpdateChecker->getVcsApi()->enableReleaseAssets();
 
-//Set the branch that contains the stable release.
-$myUpdateChecker->setBranch('main');
+// //Set the branch that contains the stable release.
+// $myUpdateChecker->setBranch('main');
 
-$myUpdateChecker->setAuthentication('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');
+// $myUpdateChecker->setAuthentication('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');
 
-$myUpdateChecker->getVcsApi()->enableReleaseAssets();
+// $myUpdateChecker->getVcsApi()->enableReleaseAssets();
