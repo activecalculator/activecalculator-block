@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: activecalculator-block
-            path: release/activecalculator-block.zip
+            path: release/.zip
       - name: Upload to release
         uses: JasonEtco/upload-to-release@master
         with:
