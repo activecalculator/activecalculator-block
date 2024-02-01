@@ -1,14 +1,15 @@
 <?php
 /**
- * Plugin Name:       ActiveCalculator.com Block
- * Description:       Block for embedding ActiveCalculator.com calculators
+ * Plugin Name:       ActiveCalculator
+ * Plugin URI:      https://wordpress.org/plugins/activecalculator/
+ * Description:       Build a custom calculator on ActiveCalculator and easily add it to your WordPress site! No coding required.
  * Requires at least: 6.1
  * Requires PHP:      7.0
-
+ * Version:           1.0.0
  * Author:            Abdul Moiz
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       activecalculator-block
+ * Text Domain:       activecalculator
  *
  * @package           activecalculatorblock
  */
