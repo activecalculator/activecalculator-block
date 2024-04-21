@@ -1,6 +1,6 @@
 {
   "name": "activecalculator",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Block for embedding ActiveCalculator.com calculators",
   "author": "Abdul Moiz",
   "license": "GPL-2.0-or-later",

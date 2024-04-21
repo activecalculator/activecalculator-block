@@ -1,8 +1,8 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "activecalculatorblock/activecalculator-block",
-  "version": "0.1.0",
+  "name": "activecalculator/activecalculator-block",
+  "version": "1.0.0",
   "title": "ActiveCalculator.com Block",
   "category": "widgets",
   "attributes": {

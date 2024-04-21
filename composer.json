@@ -1,5 +1,5 @@
 {
-    "name": "activecalculatorblock/activecalculator-block",
+    "name": "activecalculator/activecalculator-block",
     "description": "Block for embedding ActiveCalculator.com calculators",
     "require": {
       "php": "^7.3||^8.0"

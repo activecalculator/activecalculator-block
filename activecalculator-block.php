@@ -11,8 +11,12 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       activecalculator
  *
- * @package           activecalculatorblock
+ * @package           activecalculator
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
 /**
  * Registers the block using the metadata loaded from the `block.json` file.
@@ -21,10 +25,10 @@
  *
  * @see https://developer.wordpress.org/reference/functions/register_block_type/
  */
-function activecalculatorblock_activecalculator_block_block_init() {
+function activecalculator_activecalculator_block_block_init() {
 	register_block_type( __DIR__ . '/build' );
 }
-add_action( 'init', 'activecalculatorblock_activecalculator_block_block_init' );
+add_action( 'init', 'activecalculator_activecalculator_block_block_init' );
 
 // Add the ActiveCalculator Resize script
 // function enqueue_activecalculator_resizer() {
