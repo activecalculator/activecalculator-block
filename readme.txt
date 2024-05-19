@@ -1,7 +1,7 @@
 === ActiveCalculator ===
 Contributors: progrmoiz
 Tags: activecalculator, calculator, form, calculator form, quote calculator, price quote calculator, product configurator, configurator, calculator builder, product configurator, embed, builder, form builder
-Tested up to: 6.3
+Tested up to: 6.5
 Requires PHP: 7.0
 Stable tag: 1.0.0
 License: GPLv2 or later
