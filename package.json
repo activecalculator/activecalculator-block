@@ -1,20 +1,32 @@
 {
   "name": "activecalculator",
-  "version": "1.0.0",
-  "description": "Block for embedding ActiveCalculator.com calculators",
+  "version": "1.1.0",
+  "private": true,
+  "description": "WordPress plugin for embedding ActiveCalculator calculators with a block, shortcode or Elementor widget",
   "author": "Abdul Moiz",
   "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/activecalculator/activecalculator-block",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/activecalculator/activecalculator-block.git"
+  },
   "main": "build/index.js",
   "scripts": {
-    "build": "wp-scripts build",
-    "format": "wp-scripts format",
-    "lint:css": "wp-scripts lint-style",
-    "lint:js": "wp-scripts lint-js",
-    "packages-update": "wp-scripts packages-update",
-    "plugin-zip": "wp-scripts plugin-zip",
-    "start": "wp-scripts start"
+    "build": "wp-scripts build --webpack-copy-php",
+    "start": "wp-scripts start --webpack-copy-php",
+    "lint:js": "wp-scripts lint-js src",
+    "lint:css": "wp-scripts lint-style \"src/**/*.scss\"",
+    "format": "wp-scripts format src",
+    "test:unit": "node --test \"src/**/*.test.mjs\"",
+    "dist": "npm run build && node -e \"require('fs').rmSync('.dist',{recursive:true,force:true})\" && mkdir -p .dist/activecalculator && rsync -a --exclude-from=.distignore ./ .dist/activecalculator/",
+    "plugin-zip": "npm run dist && node -e \"require('fs').rmSync('activecalculator.zip',{force:true})\" && cd .dist && zip -rq ../activecalculator.zip activecalculator",
+    "env:start": "npm run dist && wp-env start",
+    "env:stop": "wp-env stop",
+    "wp": "wp-env run cli wp",
+    "plugin-check": "wp-env run cli wp plugin check activecalculator --require=./wp-content/plugins/plugin-check/cli.php"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^26.10.0"
+    "@wordpress/env": "^11.16.0",
+    "@wordpress/scripts": "^36.0.0"
   }
 }
