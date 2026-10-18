@@ -1,100 +1,222 @@
 /**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-i18n/
+ * Block editor UI: paste a calculator's embed code, link or ID, then optionally load a live preview.
  */
-import { __, _x } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
+import {
+	BlockControls,
+	BlockIcon,
+	InspectorControls,
+	useBlockProps,
+} from '@wordpress/block-editor';
+import {
+	Button,
+	ExternalLink,
+	Notice,
+	PanelBody,
+	Placeholder,
+	ToolbarButton,
+	ToolbarGroup,
+} from '@wordpress/components';
+import { useInstanceId } from '@wordpress/compose';
+import { useState } from '@wordpress/element';
 
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/packages/packages-block-editor/#useBlockProps
- */
-import { BlockIcon, useBlockProps } from '@wordpress/block-editor';
-import { Button, Path, Placeholder, Rect, SVG } from '@wordpress/components';
-
-/**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
+import CalculatorPreview from './components/preview';
+import icon from './icon';
+import { parseCalculatorInput } from './utils/parse-calculator-input';
 import './editor.scss';
 
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
- *
- * @see https://developer.wordpress.org/block-editor/developers/block-api/block-edit-save/#edit
- *
- * @return {WPElement} Element to render.
- */
+const CREATE_CALCULATOR_URL =
+	'https://activecalculator.com/?utm_source=wordpress&utm_medium=plugin&utm_campaign=block-empty-state';
 
-export const icon = {
-  foreground: '#0066FF',
-  src: (
-    <SVG width="458" height="458" viewBox="0 0 458 458" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <Rect width="458" height="458" rx="229" fill="currentColor" />
-      <Path d="M140.103 231.357C139.658 233.301 139.507 235.281 139.507 237.275V334.393C139.507 358.55 114.687 374.215 97.8175 356.924C61.0268 319.214 52.1071 263.405 53.0682 234.278C65.3678 117.315 171.965 73.3258 229.705 74.0078V161.986C169.865 162.651 145.591 207.355 140.103 231.357Z" fill="white"></Path>
-      <Path d="M318.897 231.357C319.342 233.301 319.493 235.281 319.493 237.275V334.393C319.493 358.55 344.313 374.215 361.183 356.924C397.973 319.214 406.893 263.405 405.932 234.278C393.632 117.315 287.035 73.3258 229.295 74.0078V161.986C289.135 162.651 313.409 207.355 318.897 231.357Z" fill="white"></Path>
-    </SVG>
-  ),
-};
-
-export default function Edit(props) {
-  const { attributes, setAttributes } = props;
-  const { id } = attributes;
-
-  return (
-    <div
-      {...useBlockProps({ className: "my-awesome-class" })}
-    >
-      <Placeholder
-        icon={<BlockIcon icon={icon} showColors />}
-        label="ActiveCalculator"
-        className="wp-block-embed"
-        instructions={__(
-          'Enter the ID of the calculator you want to embed.'
-        )}
-      >
-        <form onSubmit={(e) => e.preventDefault()}>
-          <input
-            type="text"
-            value={id}
-            className="components-placeholder__input"
-            aria-label={__('Calculator ID')}
-            placeholder={__('Enter Calculator ID')}
-            onChange={(e) => setAttributes({ id: e.target.value })}
-          />
-          <Button variant="primary" type="submit">
-            {_x('Save', 'button label')}
-          </Button>
-        </form>
-        {/* <div className="wp-block-embed__learn-more">
-          <ExternalLink
-            href={__(
-              'https://wordpress.org/documentation/article/embeds/'
-            )}
-          >
-            {__('Learn more about embeds')}
-          </ExternalLink>
-        </div> */}
-        {/* {cannotEmbed && (
-        <div className="components-placeholder__error">
-          <div className="components-placeholder__instructions">
-            {__('Sorry, this content could not be embedded.')}
-          </div>
-          <Button variant="secondary" onClick={tryAgain}>
-            {_x('Try again', 'button label')}
-          </Button>{' '}
-          <Button variant="secondary" onClick={fallback}>
-            {_x('Convert to link', 'button label')}
-          </Button>
-        </div>
-      )} */}
-      </Placeholder>
-    </div>
-  );
+function getErrorMessage( error ) {
+	switch ( error ) {
+		case 'empty':
+			return __(
+				'Paste the calculator’s embed code, link or ID.',
+				'activecalculator'
+			);
+		case 'custom-link':
+			return __(
+				'This link uses a custom name, so it doesn’t include the calculator ID. Copy the embed code from Share → Embed in ActiveCalculator instead.',
+				'activecalculator'
+			);
+		default:
+			return __(
+				'That doesn’t look like ActiveCalculator embed code, a calculator link or an ID.',
+				'activecalculator'
+			);
+	}
 }
 
+export default function Edit( { attributes, setAttributes, isSelected } ) {
+	const { id } = attributes;
+	const [ isEditing, setIsEditing ] = useState( ! id );
+	const [ value, setValue ] = useState( id );
+	const [ error, setError ] = useState( null );
+	const [ showPreview, setShowPreview ] = useState( false );
+	const inputId = useInstanceId( Edit, 'activecalculator-input' );
+	const blockProps = useBlockProps();
+
+	const startReplacing = () => {
+		setValue( id );
+		setError( null );
+		setShowPreview( false );
+		setIsEditing( true );
+	};
+
+	const onSubmit = ( event ) => {
+		event.preventDefault();
+		const result = parseCalculatorInput( value );
+
+		if ( result.error ) {
+			setError( result.error );
+			return;
+		}
+
+		setError( null );
+		setValue( result.id );
+		setAttributes( { id: result.id } );
+		setShowPreview( false );
+		setIsEditing( false );
+	};
+
+	if ( isEditing || ! id ) {
+		return (
+			<div { ...blockProps }>
+				<Placeholder
+					icon={ <BlockIcon icon={ icon } showColors /> }
+					label={ __( 'ActiveCalculator', 'activecalculator' ) }
+					instructions={ __(
+						'Paste the embed code, link or ID of the calculator you want to add. You’ll find them in ActiveCalculator under Share → Embed.',
+						'activecalculator'
+					) }
+					className="activecalculator-placeholder"
+				>
+					<form
+						className="activecalculator-placeholder__form"
+						onSubmit={ onSubmit }
+					>
+						<label
+							htmlFor={ inputId }
+							className="activecalculator-placeholder__label"
+						>
+							{ __(
+								'Embed code, link or ID',
+								'activecalculator'
+							) }
+						</label>
+						<div className="activecalculator-placeholder__row">
+							<input
+								id={ inputId }
+								type="text"
+								className="components-placeholder__input activecalculator-placeholder__input"
+								value={ value }
+								placeholder="https://app.activecalculator.com/embed/…"
+								aria-invalid={ !! error }
+								onChange={ ( event ) => {
+									setValue( event.target.value );
+									setError( null );
+								} }
+							/>
+							<Button variant="primary" type="submit">
+								{ __( 'Embed', 'activecalculator' ) }
+							</Button>
+							{ !! id && (
+								<Button
+									variant="tertiary"
+									onClick={ () => {
+										setError( null );
+										setIsEditing( false );
+									} }
+								>
+									{ __( 'Cancel', 'activecalculator' ) }
+								</Button>
+							) }
+						</div>
+					</form>
+					{ error && (
+						<Notice
+							status="error"
+							isDismissible={ false }
+							className="activecalculator-placeholder__error"
+						>
+							{ getErrorMessage( error ) }
+						</Notice>
+					) }
+					<p className="activecalculator-placeholder__note">
+						{ __(
+							'Don’t have a calculator yet?',
+							'activecalculator'
+						) }{ ' ' }
+						<ExternalLink href={ CREATE_CALCULATOR_URL }>
+							{ __( 'Create one free', 'activecalculator' ) }
+						</ExternalLink>
+					</p>
+				</Placeholder>
+			</div>
+		);
+	}
+
+	return (
+		<>
+			<BlockControls>
+				<ToolbarGroup>
+					{ showPreview && (
+						<ToolbarButton
+							onClick={ () => setShowPreview( false ) }
+						>
+							{ __( 'Hide preview', 'activecalculator' ) }
+						</ToolbarButton>
+					) }
+					<ToolbarButton onClick={ startReplacing }>
+						{ __( 'Replace', 'activecalculator' ) }
+					</ToolbarButton>
+				</ToolbarGroup>
+			</BlockControls>
+			<InspectorControls>
+				<PanelBody title={ __( 'Calculator', 'activecalculator' ) }>
+					<p>
+						{ __( 'Calculator ID', 'activecalculator' ) }
+						<br />
+						<code>{ id }</code>
+					</p>
+					<Button variant="secondary" onClick={ startReplacing }>
+						{ __( 'Replace calculator', 'activecalculator' ) }
+					</Button>
+				</PanelBody>
+			</InspectorControls>
+			<div { ...blockProps }>
+				{ showPreview ? (
+					<CalculatorPreview id={ id } isSelected={ isSelected } />
+				) : (
+					<Placeholder
+						icon={ <BlockIcon icon={ icon } showColors /> }
+						label={ __( 'ActiveCalculator', 'activecalculator' ) }
+						instructions={ sprintf(
+							/* translators: %s: calculator ID. */
+							__(
+								'Calculator %s will show here on the published page.',
+								'activecalculator'
+							),
+							id
+						) }
+						className="activecalculator-placeholder"
+					>
+						<Button
+							variant="secondary"
+							onClick={ () => setShowPreview( true ) }
+						>
+							{ __( 'Load preview', 'activecalculator' ) }
+						</Button>
+						<p className="activecalculator-placeholder__note">
+							{ __(
+								'Loading a preview counts as 1 impression on your ActiveCalculator plan.',
+								'activecalculator'
+							) }
+						</p>
+					</Placeholder>
+				) }
+			</div>
+		</>
+	);
+}

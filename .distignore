@@ -1,0 +1,17 @@
+# Files left out of the WordPress.org release.
+# Used by `npm run dist` / `npm run plugin-zip` and by the deploy workflow (rsync --exclude-from).
+# Shipped on purpose: the main PHP file, readme.txt, includes/, build/, src/ and package.json
+# (WordPress.org guideline 4: the human-readable source of build/ must be available).
+
+# Dotfiles and dot-folders: .git, .github, .wordpress-org, .dist, .wp-env.json, .gitignore, .distignore, editor/AI config
+.*
+
+node_modules
+tests
+*.test.*
+package-lock.json
+README.md
+CLAUDE.md
+AGENTS.md
+*.zip
+eslint.config.cjs
