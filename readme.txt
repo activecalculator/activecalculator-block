@@ -18,7 +18,7 @@ ActiveCalculator is a no-code calculator builder. You build a calculator in Acti
 
 * **Matches your brand.** Pick a theme or set your own colors and fonts, so the calculator looks like part of your site.
 * **Works on every device.** Calculators adapt to phones, tablets and desktops.
-* **Captures leads.** Add name, email and phone fields, and send each submission to Google Sheets, Slack, Notion, Airtable, Zapier or a webhook.
+* **Captures leads.** Add name, email and phone fields, and send each submission to Google Sheets, a webhook, or thousands of other apps through Zapier.
 * **Shows what's working.** See impressions and submissions for every calculator in your dashboard.
 * **Handles real pricing.** Formulas, show/hide logic, multi-step pages, charts, value lookups and product configurators, with no code.
 * **Starts fast.** Begin from a template, or describe your calculator and let AI build the first draft.

@@ -1,0 +1,53 @@
+# Updates the readme and listing assets on WordPress.org without releasing a new version.
+#
+# Runs when readme.txt or .wordpress-org/ changes on main (for example a "Tested up to" bump or a copy
+# fix). It copies only readme.txt into SVN trunk/ and the stable tag, and syncs .wordpress-org/ to
+# assets/. Plugin code is never touched; code changes ship through deploy.yml.
+#
+# Guard: during a release, readme.txt's "Stable tag" is bumped before that version exists on
+# WordPress.org. This workflow only runs when the Stable tag already exists as a git tag (a published
+# release), so it can't point the listing at a version that hasn't shipped.
+#
+# Needs the same SVN_USERNAME / SVN_PASSWORD secrets as deploy.yml.
+name: Update WordPress.org readme and assets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - readme.txt
+      - .wordpress-org/**
+  workflow_dispatch:
+
+jobs:
+  update:
+    name: Update readme and assets on WordPress.org
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check that the Stable tag is already released
+        id: guard
+        run: |
+          STABLE=$(grep -m 1 -E '^Stable tag:' readme.txt | awk '{print $NF}' | tr -d '\r')
+          echo "Stable tag in readme.txt: $STABLE"
+          if git rev-parse -q --verify "refs/tags/$STABLE" > /dev/null; then
+            echo "Tag $STABLE exists; updating readme and assets."
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag $STABLE has not been released yet; skipping. deploy.yml handles it when the release is published."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update readme and assets on WordPress.org
+        if: steps.guard.outputs.run == 'true'
+        uses: 10up/action-wordpress-plugin-asset-update@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: activecalculator
+          ASSETS_DIR: .wordpress-org
+          IGNORE_OTHER_FILES: true
